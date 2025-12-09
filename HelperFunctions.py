@@ -125,7 +125,8 @@ sbox = [
 
 shifts = [1, 1, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1]
 
-def permute(block, table): #this function is used to shuffel a string of bits 'block' using a specific table 'table'. for example scrambeling our key bits 'block' into pc2 'table'
+
+def permute(block, table): #this function is used to shuffel a string of bits 'block' using a specific table 'table'. For example scrambeling our key bits 'block' into pc2 'table'
     result = ''
     for i in table:
         result += block[i - 1]
@@ -146,44 +147,14 @@ def xor(a, b): #created an xor function
             result += '1'
     return result
 
-def sbox_sub(bits):
+def sboxSub(bits):
     result = ''
-    for i in range(8): #loop through the 48 binary number in increments of 6, so we loop 8 times
-        block = bits[i*6:(i+1)*6] #here we split the 48 bit number in to 8 groups of 6
-        row = int(block[0] + block[5], 2) #calculate the row by using using the first and last value of each 6 bit number and convert it to an integer
-        col = int(block[1:5], 2) #calculate the coloumn by using the 4 middle binary numbers and convert it to an integer
-        val = sbox[i][row][col] #search for the result in our sbox table
-        valBin = format(val, '04b') #convert the result we obtained from the sbox to a 4-bit binary     
-        result += valBin #append the 4-bit binary number to out result. after looping 8 times we will have a 32 bit number
+    for i in range(8): 
+        block = bits[i*6:(i+1)*6]
+        row = int(block[0] + block[5], 2)  
+        col = int(block[1:5], 2)         
+        val = sbox[i][row][col]
+        valBin = format(val, '04b')       
+        result += valBin
     return result
-
-
-def strToBin(string): #a simple function that converts the inputed string to a binary number
-    result = ''
-    for i in string: #loop through each character in the string
-        result += format(ord(i), '08b') #use ACSII code to convert each character to an 8-bit binary number and appends that to the result
-    return result.ljust(64, '0')[:64]
-
-def binToStr(binary): #a simple function that convert binary numbers to string
-    result = ''
-    for i in range(0, len(binary), 8): #loop through our binary number in increments of 8
-        byte = binary[i:i+8] #slice the binary numbers in groups of 8 as each 8 bits represent 1 character
-        result += chr(int(byte, 2)) #convert the byte(8-bits) to a charachter and appent to result forming our word
-    return result
-
-
-def padText(text): #this pads the text and lets us input strings that are greater than 8 characters
-    pad_len = 8 - (len(text) % 8) #checks how many padding bytes we need to make the number of characters in the string a multiple of 8
-    return text + chr(pad_len) * pad_len #adds the padding which leaves us with a string legth that is a multiple of 8 so that we do the DES alogorith on each 8 characters in one time
-
-
-def unpadText(text): #funtion that removes the padding that we did 
-    pad_len = ord(text[-1]) #convert the last character to a number so that we know how much padding was added
-    return text[:-pad_len] #remove all the padding we added
-
-
-
-##############################################
-#Key Scheduling
-##############################################
 
