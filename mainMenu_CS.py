@@ -1,0 +1,52 @@
+from encryption_decryption import encrypt_text, decrypt_text
+def mainMenu1():
+    while True:
+        print("\n-----------DES Encryption algorithm-----------")
+        choice = int(input("Do you want to encrypt(1) or decrypt(2) or exit(3):"))
+        if choice == 1:
+            plaintxt = input("Enter text to encrypt:")
+            key = input("Enter your key:")
+            resultCipher = encrypt_text(plaintxt, key)
+            print(f"your encrypted text in binary: {resultCipher}")
+            print(f"your encrypted text in Hexa-Decimal: {hex(int(resultCipher,2))[2:].upper()}")
+
+        elif choice == 2:
+            ciphertxt = input("Enter cipher text you want to decrypt in binary:")
+            keyDec = input("Enter the key:")
+            resultPlain = decrypt_text(ciphertxt, keyDec)
+            print(f"Decrypted cipher text to plain text: {resultPlain}")
+
+        elif choice == 3:
+            print("Thankyou for using my code, goodbye...")
+            break
+        
+        else:
+            print("Invalid choice input must be (1-3)")
+
+def mainMenu2():
+    while True:
+        print("\n-----------DES Encryption algorithm-----------")
+
+        plaintxt = input("Enter text to encrypt:")
+        key = input("Enter your key:")
+        resultCipher = encrypt_text(plaintxt, key)
+        print(f"your encrypted text in binary: {resultCipher}")
+        print(f"your encrypted text in Hexa-Decimal: {hex(int(resultCipher,2))[2:].upper()}")
+
+        resultPlain = decrypt_text(resultCipher, key)
+        print(f"Decrypted cipher text back to plain text: {resultPlain}")
+
+        
+            
+        
+if __name__ == "__main__":
+    while True:
+        choice = int(input("do u want simple main menu(1) or the detailed main menu(2):"))
+        if choice == 1:
+            mainMenu2()
+            break
+        elif choice == 2:
+            mainMenu1()
+            break
+        else:
+            print("Invalid input")

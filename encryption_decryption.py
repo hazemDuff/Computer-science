@@ -1,11 +1,9 @@
-from HelperFunctions import permute, e, xor, sboxSub, p
+from HelperFunctions import permute, e, xor, sboxSub, p, DES
 
 
-def f(R, K): #function that take the 32bit right side of the plaintext(R) and the 48 bits subkey(K) for each of the 16 rounds
-    R_expand = permute(R, e) #expand the 32 bit right side to 48 bits
-    temp = xor(R_expand, K) #XOR our expanded right side with the subkey
-    result = permute(sboxSub(temp), p) #applies the sbox to the result of the XOR and then applies the permutation to it 
-    return result
+################################################################################################
+#padding and unpadding functions to make code accept strings of any legnth
+################################################################################################
 
 def padText(text): #this pads the text and lets us input strings that are greater than 8 characters
     pad_len = 8 - (len(text) % 8) #checks how many padding bytes we need to make the number of characters in the string a multiple of 8
@@ -15,6 +13,9 @@ def unpadText(text): #funtion that removes the padding that we did
     pad_len = ord(text[-1]) #convert the last character to a number so that we know how much padding was added
     return text[:-pad_len] #remove all the padding we added
 
+################################################################################################
+#string to binary conversions
+################################################################################################
 
 def strToBin(string): #a simple function that converts the inputed string to a binary number
     result = ''
@@ -28,3 +29,25 @@ def binToStr(binary): #a simple function that convert binary numbers to string
         byte = binary[i:i+8] #slice the binary numbers in groups of 8 as each 8 bits represent 1 character
         result += chr(int(byte, 2)) #convert the byte(8-bits) to a charachter and appent to result forming our word
     return result
+
+################################################################################################
+#encryption and decryption functions
+################################################################################################
+
+def encrypt_text(text, key):
+    text = padText(text)
+    key_bin = strToBin(key[:8])
+    cipher = ''
+    for i in range(0, len(text), 8):
+        block = text[i:i+8]
+        block_bin = strToBin(block)
+        cipher += DES(block_bin, key_bin, 'encrypt')
+    return cipher
+
+def decrypt_text(cipher_bin, key):
+    key_bin = strToBin(key[:8])
+    text = ''
+    for i in range(0, len(cipher_bin), 64):
+        block_bin = cipher_bin[i:i+64]
+        text += binToStr(DES(block_bin, key_bin, 'decrypt'))
+    return unpadText(text)

@@ -125,6 +125,9 @@ sbox = [
 
 shifts = [1, 1, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1]
 
+################################################################################################
+#Helper functions used in other important functions
+################################################################################################
 
 def permute(block, table): #this function is used to shuffel a string of bits 'block' using a specific table 'table'. For example scrambeling our key bits 'block' into pc2 'table'
     result = ''
@@ -157,4 +160,46 @@ def sboxSub(bits):
         valBin = format(val, '04b')       
         result += valBin
     return result
+
+################################################################################################
+#Key sheduling functions
+################################################################################################
+
+def generate_subkeys(key64): #function that generates the 16 round subkeys 
+    key = permute(key64, pc1) #reorder the key using pc1 dropping the parity bits in the proccess
+    C = key[:28] #left half of the new shuffled key
+    D = key[28:] #right half of the new shuffled key
+    subkeys = [] #empty list that will store all the 16 subkeys
+    for shift in shifts: 
+        C = leftShift(C, shift) #shift the left side with the amount of shifts required for the specic round
+        D = leftShift(D, shift) #shift the right side with the amount of shifts required for the specic round
+        subkeys.append(permute(C+D, pc2)) #we then group the right and left side and shuffle it once more with pc2 and finally append it to our 'subkeys' list
+    return subkeys
+
+################################################################################################
+#main DES functions 
+################################################################################################
+
+def f(R, K): #function that take the 32bit right side of the plaintext(R) and the 48 bits subkey(K) for each of the 16 rounds
+    R_expand = permute(R, e) #expand the 32 bit right side to 48 bits
+    temp = xor(R_expand, K) #XOR our expanded right side with the subkey
+    result = permute(sboxSub(temp), p) #applies the sbox to the result of the XOR and then applies the permutation to it 
+    return result
+
+
+def DES(block, key, mode='encrypt'): #DES function takes 3 arguments: block is the 64 bitstring, key is our 64bit key we get from user, mode just specifies the mode, it is set to encrypt by defult
+    block = permute(block, ip)
+    L = block[:32]
+    R = block[32:]
+    subkeys = generate_subkeys(key)
+    if mode == 'decrypt':
+        subkeys = subkeys[::-1]
+    for k in subkeys:
+        new_L = R
+        new_R = xor(L, f(R,k))
+        L = new_L
+        R = new_R
+    return permute(R+L, fp)
+
+
 
