@@ -11,7 +11,7 @@ def mainMenu1(): #main menu 1, more complex, and asks the user more questions
             print(f"your encrypted text in Hexa-Decimal: {hex(int(resultCipher,2))[2:].upper()}") #convert the binary number to HexaDecimal
 
         elif choice == 2:
-            ciphertxt = input("Enter cipher text you want to decrypt IN BINARY:") #input must be in binary not in HexaDecimal
+            ciphertxt = input("Enter cipher text you want to decrypt IN HexaDecimal:") #input must be in HexaDecimal 
             keyDec = input("Enter the key:")
             resultPlain = decrypt_text(ciphertxt, keyDec)
             print(f"Decrypted cipher text to plain text: {resultPlain}")
