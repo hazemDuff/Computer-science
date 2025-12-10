@@ -30,14 +30,15 @@ def mainMenu2(): #main menu 2, simple, asks user only 2 questions and retuns the
         plaintxt = input("Enter text to encrypt:")
         key = input("Enter your key:")
         resultCipher = encrypt_text(plaintxt, key)
+        resultCipher_hex = hex(int(resultCipher,2))[2:].upper()
         print(f"your encrypted text in binary: {resultCipher}")
         print(f"your encrypted text in Hexa-Decimal: {hex(int(resultCipher,2))[2:].upper()}")
 
-        resultPlain = decrypt_text(resultCipher, key)
+        resultPlain = decrypt_text(resultCipher_hex, key)
         print(f"Decrypted cipher text back to plain text: {resultPlain}")
 
-        
-            
+def testCases():
+    pass            
         
 if __name__ == "__main__":
     while True:
