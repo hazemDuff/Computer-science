@@ -36,9 +36,7 @@ def mainMenu2(): #main menu 2, simple, asks user only 2 questions and retuns the
 
         resultPlain = decrypt_text(resultCipher_hex, key)
         print(f"Decrypted cipher text back to plain text: {resultPlain}")
-
-def testCases():
-    pass            
+       
         
 if __name__ == "__main__":
     while True:
