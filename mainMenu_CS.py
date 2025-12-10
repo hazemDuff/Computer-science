@@ -1,5 +1,5 @@
 from encryption_decryption import encrypt_text, decrypt_text
-def mainMenu1():
+def mainMenu1(): #main menu 1, more complex, and asks the user more questions
     while True:
         print("\n-----------DES Encryption algorithm-----------")
         choice = int(input("Do you want to encrypt(1) or decrypt(2) or exit(3):"))
@@ -8,10 +8,10 @@ def mainMenu1():
             key = input("Enter your key:")
             resultCipher = encrypt_text(plaintxt, key)
             print(f"your encrypted text in binary: {resultCipher}")
-            print(f"your encrypted text in Hexa-Decimal: {hex(int(resultCipher,2))[2:].upper()}")
+            print(f"your encrypted text in Hexa-Decimal: {hex(int(resultCipher,2))[2:].upper()}") #convert the binary number to HexaDecimal
 
         elif choice == 2:
-            ciphertxt = input("Enter cipher text you want to decrypt in binary:")
+            ciphertxt = input("Enter cipher text you want to decrypt IN BINARY:") #input must be in binary not in HexaDecimal
             keyDec = input("Enter the key:")
             resultPlain = decrypt_text(ciphertxt, keyDec)
             print(f"Decrypted cipher text to plain text: {resultPlain}")
@@ -23,7 +23,7 @@ def mainMenu1():
         else:
             print("Invalid choice input must be (1-3)")
 
-def mainMenu2():
+def mainMenu2(): #main menu 2, simple, asks user only 2 questions and retuns the encrypted and decrypted results in one go
     while True:
         print("\n-----------DES Encryption algorithm-----------")
 

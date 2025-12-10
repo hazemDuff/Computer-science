@@ -1,6 +1,5 @@
 from HelperFunctions import permute, e, xor, sboxSub, p, DES
 
-
 ################################################################################################
 #padding and unpadding functions to make code accept strings of any legnth
 ################################################################################################
@@ -21,33 +20,37 @@ def strToBin(string): #a simple function that converts the inputed string to a b
     result = ''
     for i in string: #loop through each character in the string
         result += format(ord(i), '08b') #use ACSII code to convert each character to an 8-bit binary number and appends that to the result
-    return result.ljust(64, '0')[:64]
+    if len(result) < 64: #if the binary number is longer than 64 bits
+        result += ('0' * (64 - len(result))) #add 0s until the number is exactly 64 bits
+    else:
+        result = result[:64] #else if the number is greater than or equal to 64 bits, take the first 64 bits. This ensures that the binary number is exactly 64 bits
+    return result
 
 def binToStr(binary): #a simple function that convert binary numbers to string
     result = ''
     for i in range(0, len(binary), 8): #loop through our binary number in increments of 8
         byte = binary[i:i+8] #slice the binary numbers in groups of 8 as each 8 bits represent 1 character
-        result += chr(int(byte, 2)) #convert the byte(8-bits) to a charachter and appent to result forming our word
+        result += chr(int(byte, 2)) #convert the byte(8-bits) to a character and append to result forming our word
     return result
 
 ################################################################################################
 #encryption and decryption functions
 ################################################################################################
 
-def encrypt_text(text, key):
-    text = padText(text)
-    key_bin = strToBin(key[:8])
+def encrypt_text(text, key): #function that breaks our text into 64-bit block so we can encrypt each block
+    text = padText(text) #pad our so that its a multiple of 8
+    key_bin = strToBin(key[:8]) #converts the first 8 characters of the key to binary
     cipher = ''
-    for i in range(0, len(text), 8):
-        block = text[i:i+8]
-        block_bin = strToBin(block)
-        cipher += DES(block_bin, key_bin, 'encrypt')
+    for i in range(0, len(text), 8): #loop through the padded text 64-bits(8 bytes) at a time
+        block = text[i:i+8] #slice the text into blocks of 8 bytes/charcters
+        block_bin = strToBin(block) #convert 8 bytes to 64-bits
+        cipher += DES(block_bin, key_bin, 'encrypt') #encrypt each 64-bit parts of the text using the 'DES' function and append to 'cipher' as a string
     return cipher
 
-def decrypt_text(cipher_bin, key):
-    key_bin = strToBin(key[:8])
+def decrypt_text(cipher_bin, key): 
+    key_bin = strToBin(key[:8]) #converts the first 8 characters of the jey to binary
     text = ''
-    for i in range(0, len(cipher_bin), 64):
-        block_bin = cipher_bin[i:i+64]
-        text += binToStr(DES(block_bin, key_bin, 'decrypt'))
-    return unpadText(text)
+    for i in range(0, len(cipher_bin), 64): #loop through the ciphertext 64-bits(8 bytes) at a time
+        block_bin = cipher_bin[i:i+64] #slice the ciphertext into block of 64 bits
+        text += binToStr(DES(block_bin, key_bin, 'decrypt')) #apply the DES algorithm in 'decrypt' mode to the 64 bits and convert the reult to string and append to 'text'
+    return unpadText(text) #unpadd the text from the padding applied to it and return it 

@@ -151,14 +151,14 @@ def xor(a, b): #created an xor function
     return result
 
 def sboxSub(bits):
-    result = ''
-    for i in range(8): 
-        block = bits[i*6:(i+1)*6]
-        row = int(block[0] + block[5], 2)  
-        col = int(block[1:5], 2)         
-        val = sbox[i][row][col]
-        valBin = format(val, '04b')       
-        result += valBin
+    result = '' 
+    for i in range(8): #loop through each of the 8 s-boxs, and the 8 groups of 6-bit binary numbers
+        block = bits[i*6:(i+1)*6] #extarct 6-bits at a time from the 48 bits(This is done 8 times for each block(8 * 6 = 48))
+        row = int(block[0] + block[5], 2) #obtain integer value of the first and last bits to determine our row
+        col = int(block[1:5], 2) #obtain integer value of the middle 4 bits to determine our column
+        val = sbox[i][row][col] #plot the column and row in the s box and obtain our integer numbers
+        valBin = format(val, '04b') #convert that intger number to a 4-bit binary string      
+        result += valBin #append the 4-bit binary string to 'result'
     return result
 
 ################################################################################################
@@ -180,7 +180,7 @@ def generate_subkeys(key64): #function that generates the 16 round subkeys
 #main DES functions 
 ################################################################################################
 
-def f(R, K): #function that take the 32bit right side of the plaintext(R) and the 48 bits subkey(K) for each of the 16 rounds
+def feistel(R, K): #function that take the 32bit right side of the plaintext(R) and the 48 bits subkey(K) for each of the 16 rounds
     R_expand = permute(R, e) #expand the 32 bit right side to 48 bits
     temp = xor(R_expand, K) #XOR our expanded right side with the subkey
     result = permute(sboxSub(temp), p) #applies the sbox to the result of the XOR and then applies the permutation to it 
@@ -188,18 +188,18 @@ def f(R, K): #function that take the 32bit right side of the plaintext(R) and th
 
 
 def DES(block, key, mode='encrypt'): #DES function takes 3 arguments: block is the 64 bitstring, key is our 64bit key we get from user, mode just specifies the mode, it is set to encrypt by defult
-    block = permute(block, ip)
-    L = block[:32]
-    R = block[32:]
-    subkeys = generate_subkeys(key)
-    if mode == 'decrypt':
-        subkeys = subkeys[::-1]
+    block = permute(block, ip) #shuffle our 64-bit block with the initial permutation
+    L = block[:32] #left half of the block(32-bits)
+    R = block[32:] #right half of the block(32-bits)
+    subkeys = generate_subkeys(key) #genrate the 16 subkeys from the 'generate_subkeys' function we created
+    if mode == 'decrypt': #if we are decrypting
+        subkeys = subkeys[::-1] #reverse the order of the subkeys(k16-k15...-k1)
     for k in subkeys:
-        new_L = R
-        new_R = xor(L, f(R,k))
-        L = new_L
-        R = new_R
-    return permute(R+L, fp)
+        new_L = R #new left becomes our previous round's right
+        new_R = xor(L, feistel(R,k)) #new right becomes the XOR between our previous left and the result from the 'feistel' function
+        L = new_L #update our left side
+        R = new_R #update our right side
+    return permute(R+L, fp) #after 16 rounds concatinate both sides and apply the final permutation
 
 
 
